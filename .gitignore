@@ -4,3 +4,6 @@ build
 local.properties
 *.iml
 .git
+.gradle
+gradlew.bat
+gradlew
