@@ -1,14 +1,15 @@
 package network
 
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.net.InetSocketAddress
-import java.net.Proxy
+import java.util.concurrent.Executors
 
 
 object Model {
@@ -29,8 +30,10 @@ interface WikiApiService {
 
     companion object {
         fun create(): WikiApiService {
-            val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("web-proxy.corp.hp.com", 8080))
-            val client = OkHttpClient.Builder().proxy(proxy).build()
+            println("on create")
+            //val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("web-proxy.corp.hp.com", 8080))
+           // val client = OkHttpClient.Builder().proxy(proxy).build()
+            val client = OkHttpClient.Builder().build()
             val retrofit = Retrofit.Builder().client(client)
                     .addCallAdapterFactory(
                             RxJava2CallAdapterFactory.create())
@@ -41,8 +44,30 @@ interface WikiApiService {
 
             return retrofit.create(WikiApiService::class.java)
         }
+
     }
 }
 
+var disposable: Disposable? = null
+val wikiApiServe by lazy {
+    println("Lazy wiki")
+    WikiApiService.create()
+}
+private fun beginSearch(srsearch: String) {
+    disposable =
+            wikiApiServe.hitCountCheck("query", "json", "search", srsearch)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+                    .subscribe(
+                            { result -> println("Result: ${result.query.searchinfo.totalhits}") },
+                            { error -> println("Error: ${error.message}") }
+                    )
+}
+
+fun main(args: Array<String>) {
+    println("hola")
+    beginSearch("Black Sabbath")
+
+}
 
 
