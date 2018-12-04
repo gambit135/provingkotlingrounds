@@ -1,8 +1,8 @@
 package hitEndpoint
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import coroutines.coroutines5
+import kotlinx.coroutines.*
+import kotlinx.coroutines.time.delay
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import java.io.BufferedReader
@@ -30,7 +30,7 @@ var testBearerUrl = "http://api-lodging-taxes-v2-assembly-test.us-east-1-vpc-883
 
 fun main(args: Array<String>) {
     //hitUrl("http://www.google.com/")
-    cindyHasFun2(testBearerUrl)
+    coroutines5(testBearerUrl)
 }
 
 fun hitUrl(urlString: String): String {
@@ -67,10 +67,10 @@ fun hitUrl(urlString: String): String {
 }
 
 @Throws(Exception::class)
-private fun cindyHasFun(urlToCall: String) {
+private fun coroutines1(urlToCall: String) {
     val bearer = "OWZlODM5ZGQtYjNiOC00MzI2LWJiNGMtNDljMTlhMjViMmEw"
     val updateRequest = HttpGet(urlToCall)
-   // updateRequest.entity = StringEntity("true")
+    // updateRequest.entity = StringEntity("true")
     updateRequest.addHeader("Content-Type", "application/json")
     //This bearer must have the required roles to perform the patch operation in alt
     updateRequest.setHeader("Authorization", "Bearer $bearer")
@@ -81,24 +81,7 @@ private fun cindyHasFun(urlToCall: String) {
         //log.error("Error code was {} and message {}", response.statusLine.statusCode, response.statusLine.reasonPhrase)
         //throw HTTPException(response.statusLine.statusCode)
         println(response.statusLine.statusCode)
-    }
-    else{
+    } else {
         println(response.toString())
     }
 }
-
-fun cindyHasFun2(a:String) = runBlocking { //(1)
-    val job = GlobalScope.launch { //(2)
-        val result = suspendingFunction(a) //(3)
-        print("$result")
-    }
-    print("The result: ")
-    job.join() //(4)
-}
-fun suspendingFunction(s:String): Int{
-    //ºprintln(s)
-    var a = 3
-    a += 3
-    return a
-}
-
