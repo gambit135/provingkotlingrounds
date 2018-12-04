@@ -1,5 +1,8 @@
 package hitEndpoint
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import java.io.BufferedReader
@@ -27,7 +30,7 @@ var testBearerUrl = "http://api-lodging-taxes-v2-assembly-test.us-east-1-vpc-883
 
 fun main(args: Array<String>) {
     //hitUrl("http://www.google.com/")
-    cindyHasFun(testBearerUrl)
+    cindyHasFun2(testBearerUrl)
 }
 
 fun hitUrl(urlString: String): String {
@@ -82,5 +85,20 @@ private fun cindyHasFun(urlToCall: String) {
     else{
         println(response.toString())
     }
+}
+
+fun cindyHasFun2(a:String) = runBlocking { //(1)
+    val job = GlobalScope.launch { //(2)
+        val result = suspendingFunction(a) //(3)
+        print("$result")
+    }
+    print("The result: ")
+    job.join() //(4)
+}
+fun suspendingFunction(s:String): Int{
+    //ºprintln(s)
+    var a = 3
+    a += 3
+    return a
 }
 
